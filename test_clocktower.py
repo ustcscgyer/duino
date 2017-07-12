@@ -74,6 +74,12 @@ class TestWeekdayDistance:
         assert weekday_distance(t1,t2) == 6
         assert weekday_distance(t1,t2, 'backward') == 6
 
+    def test_cross_weekend3(self):
+        t1 = dt.datetime(2017,7,11)
+        t2 = dt.datetime(2017,7,19)
+        assert weekday_distance(t1,t2) == 6
+        assert weekday_distance(t1,t2, 'backward') == 6
+
     def test_parity(self):
         dates = [dt.datetime(2017,7,i) for i in range(9,19)]
         for i in range(len(dates)):

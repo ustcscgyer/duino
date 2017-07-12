@@ -36,8 +36,8 @@ def weekday_distance(t1, t2, convention='forward'):
              Sunday to Monday is 1
     Parameters
     -------------
-        t1: datetime
-        t2: datetime
+        t1: datetime.date
+        t2: datetime.date
     convention: str, 'forward' or 'backward'
     """
     if t2 < t1:
@@ -45,7 +45,7 @@ def weekday_distance(t1, t2, convention='forward'):
 
     # Portions that is more than one week
     n0 = (t2.toordinal() - t1.toordinal()) // 7 * 5
-
+    print(n0)
     # Portions that is smaller than one week
     wd1, wd2 = t1.weekday(), t2.weekday()
     # Mathematical magic
@@ -53,13 +53,15 @@ def weekday_distance(t1, t2, convention='forward'):
         wd_map = [0,1,2,3,4,5,5]
     elif convention == 'backward':
         wd_map = [1,2,3,4,5,0,0]
+    else:
+        raise ValueError('wrong convetion')
 
     n1 = wd_map[wd2]-wd_map[wd1]
     if n1 < 0: n1 += 5
 
     return n0 + n1
 
-def cbday_distance(t1, t2, cbd = None, convention = 'forward'):
+def cbday_distance(t1, t2, holidays = None, convention = 'forward'):
     """ Number of custom business days between t1 and t2: t2 - t1
     Rolling forward convention: from 0 am+ to 0 am+
     example: Friday to Saturday is 1
@@ -71,7 +73,21 @@ def cbday_distance(t1, t2, cbd = None, convention = 'forward'):
     -------------
     t1: datetime
     t2: datetime
-    cbd: CustomBusinessDay
+    holidays: list of holidays
     convention: str, 'forward' or 'backward'
     """
-    pass
+    # First calculate number of weekdays
+    wkd_dis = weekday_distance(t1,t2,convention)
+    if holidays is None: return wkd_dis
+
+    # Calculate number of holidays that is not weekends
+    if convention == 'forward':
+        dates = holidays[(holidays >= t1) & (holidays < t2)]
+    elif convention == 'backward':
+        dates = holidays[(holidays > t1) & (holidays <= t2)]
+    else:
+        raise ValueError('wrong convetion')
+
+    nh = len([d for d in dates if d.weekday() <= 4])
+    
+    return wkd_dis - nh
