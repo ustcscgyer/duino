@@ -36,8 +36,8 @@ def weekday_distance(t1, t2, convention='forward'):
              Sunday to Monday is 1
     Parameters
     -------------
-    t1: datetime
-    t2: datetime
+        t1: datetime
+        t2: datetime
     convention: str, 'forward' or 'backward'
     """
     if t2 < t1:
@@ -45,18 +45,33 @@ def weekday_distance(t1, t2, convention='forward'):
 
     # Portions that is more than one week
     n0 = (t2.toordinal() - t1.toordinal()) // 7 * 5
-    print(n0)
+
     # Portions that is smaller than one week
     wd1, wd2 = t1.weekday(), t2.weekday()
     # Mathematical magic
     if convention == 'forward':
-        wd1_map = [0,1,2,3,4,0,0]
-        wd2_map = [0,1,2,3,4,5,5]
+        wd_map = [0,1,2,3,4,5,5]
     elif convention == 'backward':
-        wd1_map = [0,1,2,3,4,4,4]
-        wd2_map = [0,1,2,3,4,4,4]
-    print(wd2_map[wd2]-wd1_map[wd1])
-    print((wd2_map[wd2]-wd1_map[wd1])%6)
+        wd_map = [1,2,3,4,5,0,0]
 
-    return ((wd2_map[wd2]-wd1_map[wd1]) - 1) % 5 + 1
-    
+    n1 = wd_map[wd2]-wd_map[wd1]
+    if n1 < 0: n1 += 5
+
+    return n0 + n1
+
+def cbday_distance(t1, t2, cbd = None, convention = 'forward'):
+    """ Number of custom business days between t1 and t2: t2 - t1
+    Rolling forward convention: from 0 am+ to 0 am+
+    example: Friday to Saturday is 1
+             Sunday to Monday is 0
+    Rolling back convention: from 0 am- to 0 am -
+    example: Friday to Saturday is 0
+             Sunday to Monday is 1
+    Parameters
+    -------------
+    t1: datetime
+    t2: datetime
+    cbd: CustomBusinessDay
+    convention: str, 'forward' or 'backward'
+    """
+    pass
