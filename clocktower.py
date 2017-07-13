@@ -15,6 +15,9 @@ import warnings
 from pandas.tseries.holiday import *
 from pandas.tseries.offsets import CustomBusinessDay, CustomBusinessHour
 
+now = dt.datetime.now
+today = dt.date.today
+
 class USFinancialHolidayCalendar(AbstractHolidayCalendar):
     """
     US Financial Calendar
