@@ -7,8 +7,8 @@ This module provides various of objects and methods related to time
 """
 import datetime as dt, pandas as pd
 from pandas.tseries.offsets import CustomBusinessDay, Easter, Day
-from pandas.tseries.holiday import AbstractHolidayCalendar, nearest_workday, Holiday, \
-    USFederalHolidayCalendar
+from pandas.tseries.holiday import AbstractHolidayCalendar, sunday_to_monday, \
+    nearest_workday, Holiday, USFederalHolidayCalendar
 from pandas import DateOffset
 import warnings
 
@@ -21,9 +21,12 @@ today = dt.date.today
 class USFinancialHolidayCalendar(AbstractHolidayCalendar):
     """
     US Financial Calendar
+    https://www.nyse.com/markets/hours-calendars
     """
     rules = [
-        Holiday('New Years Day', month=1, day=1, observance=nearest_workday),
+        # New Years have difference observance method because the preceeding 
+        # Friday is year end and exchange is open
+        Holiday('New Years Day', month=1, day=1, observance=sunday_to_monday),
         USMartinLutherKingJr,
         USPresidentsDay,
         USMemorialDay,
