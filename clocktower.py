@@ -114,9 +114,9 @@ def bizday_diff(t1,t2):
     i.g.: bizday_diff(dt.datetime(2017,1,5), dt.datetime(2017,1,4)) = 1
     """
     if t1>t2:
-        dday = max(len(pd.bdate_range(t2,t1,freq=fi_bd)) - 1, 0)
+        dday = max(len(pd.bdate_range(t2,t1,holiday=fi_bd)) - 1, 0)
     else:
-        dday = min(1 - len(pd.bdate_range(t1,t2,freq=fi_bd)),0)
+        dday = min(1 - len(pd.bdate_range(t1,t2,holiday=fi_bd)),0)
     return dday
 
 def intra_time_diff(t1,t2, mrkt_open_time = dt.time(9,30), mrkt_close_time = dt.time(16,0)):
@@ -136,8 +136,8 @@ def intra_time_diff(t1,t2, mrkt_open_time = dt.time(9,30), mrkt_close_time = dt.
     minutes_of_day = 60*(mrkt_close_time.hour - mrkt_open_time.hour) + \
         (mrkt_close_time.minute - mrkt_open_time.minute)
     if t1>t2:
-        dday = max(len(pd.bdate_range(t2,t1,freq=fi_bd)) - 1, 0)
+        dday = max(len(pd.bdate_range(t2,t1,holiday=fi_bd)) - 1, 0)
     else:
-        dday = min(1 - len(pd.bdate_range(t1,t2,freq=fi_bd)),0)
+        dday = min(1 - len(pd.bdate_range(t1,t2,holiday=fi_bd)),0)
     return minutes_of_day*dday + 60*(t1_time.hour - t2_time.hour)\
         +(t1_time.minute - t2_time.minute)
