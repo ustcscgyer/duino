@@ -137,7 +137,7 @@ def intra_time_diff(t1, t2, mrkt_open_time=dt.time(9,30), mrkt_close_time=dt.tim
     i.g.: intra_time_diff(dt.datetime(2017,1,4,9), dt.datetime(2017,1,5,10)) = 450
         (1day == 390 + 1 hour == 60 ==> 450)
 
-    This new imiplementation is 10^6 times faster than the previous one!!! 
+    This new imiplementation is 100 times faster than the previous one!!! 
     """
     # Just for convenience
     if not isinstance(t1, pd.Series):
