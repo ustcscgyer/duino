@@ -11,6 +11,7 @@ from pandas.tseries.holiday import AbstractHolidayCalendar, sunday_to_monday, \
     nearest_workday, Holiday, USFederalHolidayCalendar
 from pandas import DateOffset
 import warnings
+import pdb
 
 from pandas.tseries.holiday import *
 from pandas.tseries.offsets import CustomBusinessDay, CustomBusinessHour
@@ -42,6 +43,8 @@ us_bd = CustomBusinessDay(calendar=USFederalHolidayCalendar())
 # US financial business day
 fi_bd = CustomBusinessDay(calendar=USFinancialHolidayCalendar())
 fi_holidays = USFinancialHolidayCalendar().holidays
+_ = fi_holidays('19500101', '20500101') # Activate the holiday for better efficiency
+
 # US Exchange bussiness hour
 fi_bh = CustomBusinessHour(calendar=USFederalHolidayCalendar(), start='9:30', end='16:30')
 
@@ -123,6 +126,7 @@ def bizday_distance(t1, t2, offset=fi_bd):
     days.
     i.g.: bizday_diff(dt.datetime(2017,1,4), dt.datetime(2017,1,5)) = 1
     """
+    warnings.warn('Depreciated. Use cbday_distance instead')
     if t1 < t2:
         dday = max(len(pd.bdate_range(t1, t2, freq=offset)) - 1, 0)
     else:
@@ -169,6 +173,20 @@ def intra_time_diff(t1, t2, mrkt_open_time=dt.time(9,30), mrkt_close_time=dt.tim
         input_table = pd.DataFrame({'date1':t1.date, 'date2':t2.date}, index=[0])
     else:
         input_table = pd.DataFrame({'date1':t1.date, 'date2':t2.date})
-    dday = input_table.apply(lambda x: cbday_distance(x.date1, x.date2, holidays), axis=1)
 
-    return minutes_of_day*dday + 60*(t2.hour - t1.hour) + (t2.minute - t1.minute)
+    # Use Unique table to boost efficiency
+    unique_input_table = input_table.drop_duplicates().copy()
+    # fi_holidays(unique_input_table.min().min(), unique_input_table.max().max()) #Activate for better performance
+
+    # dday = input_table.apply(lambda x: cbday_distance(x.date1, x.date2, holidays), axis=1)
+    unique_input_table['dday'] = unique_input_table.apply(lambda x: cbday_distance(x.date1, x.date2, holidays), axis=1)
+
+    dday = pd.merge(input_table.assign(order=input_table.index), 
+        unique_input_table, on=['date1', 'date2']).set_index('order').dday
+
+    result = minutes_of_day*dday + 60*(t2.hour - t1.hour) + (t2.minute - t1.minute)
+
+    if len(result) == 1:
+        result = result.iloc[0]
+        
+    return result
