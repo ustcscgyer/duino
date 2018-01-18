@@ -25,7 +25,8 @@ def read(uglyfile):
 def find_ncol(file_handle, ncol = None):
     while ncol is None: 
         line = file_handle.readline()
-        ncol = re.search('(?<=#\s)[0-9]+', line)
+        ncol = re.search('(?<=#)\s*[0-9]+', line)
+#         ncol = re.search('(?<=#\s)[0-9]+', line)
     return int(ncol.group(0))
 
 def read_head(file_handle, ncol):
