@@ -190,3 +190,16 @@ def intra_time_diff(t1, t2, mrkt_open_time=dt.time(9,30), mrkt_close_time=dt.tim
         result = result.iloc[0]
         
     return result
+
+
+def fast_shift_dates(dates, offset):
+    """
+    fast way to shift date, input dates must be pandas Series
+    """
+    uniq_dates = pd.Series(dates.unique()).rename('t0')
+    if len(dates) <= 100 or len(dates) / len(uniq_dates) <= 5:
+        return dates.apply(lambda x : x + offset)
+    else:
+        time_map = pd.DataFrame(uniq_dates)
+        time_map['t1'] = time_map.t0.apply(lambda x : x + offset)
+        return dates.map(time_map.set_index('t0').t1)
